@@ -1,0 +1,131 @@
+{
+	"name": "FileShare1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedService2",
+			"type": "LinkedServiceReference"
+		},
+		"type": "FileShare",
+		"structure": [
+			{
+				"name": "Centre",
+				"type": "String"
+			},
+			{
+				"name": "Filler",
+				"type": "String"
+			},
+			{
+				"name": "Store Name",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "Account Type",
+				"type": "String"
+			},
+			{
+				"name": "Major Group",
+				"type": "String"
+			},
+			{
+				"name": "Sub Group Major",
+				"type": "String"
+			},
+			{
+				"name": "Minor Group",
+				"type": "String"
+			},
+			{
+				"name": "Sub Group Minor",
+				"type": "String"
+			},
+			{
+				"name": "Account Number and Description",
+				"type": "String"
+			},
+			{
+				"name": "Date",
+				"type": "String"
+			},
+			{
+				"name": "Period 01",
+				"type": "String"
+			},
+			{
+				"name": "Period 02",
+				"type": "String"
+			},
+			{
+				"name": "Period 03",
+				"type": "String"
+			},
+			{
+				"name": "Period 04",
+				"type": "String"
+			},
+			{
+				"name": "Period 05",
+				"type": "String"
+			},
+			{
+				"name": "Period 06",
+				"type": "String"
+			},
+			{
+				"name": "Period 07",
+				"type": "String"
+			},
+			{
+				"name": "Period 08",
+				"type": "String"
+			},
+			{
+				"name": "Period 09",
+				"type": "String"
+			},
+			{
+				"name": "Period 10",
+				"type": "String"
+			},
+			{
+				"name": "Period 11",
+				"type": "String"
+			},
+			{
+				"name": "Period 12",
+				"type": "String"
+			},
+			{
+				"name": "Account Number",
+				"type": "String"
+			},
+			{
+				"name": "Comp Code",
+				"type": "String"
+			},
+			{
+				"name": "Profit Centre",
+				"type": "String"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"nullValue": "\\N",
+				"encodingName": null,
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"fileName": "ZZSAP000.CSV",
+			"folderPath": ""
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

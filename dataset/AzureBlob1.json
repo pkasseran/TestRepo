@@ -1,0 +1,31 @@
+{
+	"name": "AzureBlob1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"type": "AzureBlob",
+		"structure": [
+			{
+				"name": "\u001f�\b\b�\u0006�[\u0004\u0000DIM_CALENDAR.csv\u0000��I�dE\u0018���\u0010׊y#�\u0010�N\u0014\u0017��(�+q(T\u001cq\u0002��QeV�\u001ba���\u0007\u000e�7��Q�C�����_���˷_���{?���?��Ƌ+�}�����������'}���\u000f�w�{����>���?���{�\u0011�?<���W�|���\u000f�ޯ���\u001f8�����ﻏ?����+��څ�:򛷭�������\u001f�W\u001f�\\�������ʭ��>~��[y�V_�q�z��-߿��'�޾}���\u0017��������x���x���]Ϲs�",
+				"type": "String"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"quoteChar": "\"",
+				"nullValue": "\\N",
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"fileName": "",
+			"folderPath": "pkblobcontainer"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,84 @@
+{
+	"name": "EmployeeFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedService1",
+			"type": "LinkedServiceReference"
+		},
+		"type": "FileShare",
+		"structure": [
+			{
+				"name": "EmployeeId",
+				"type": "Int64"
+			},
+			{
+				"name": "EmployeeNo",
+				"type": "String"
+			},
+			{
+				"name": "FirstName",
+				"type": "String"
+			},
+			{
+				"name": "LastName",
+				"type": "String"
+			},
+			{
+				"name": "Gender",
+				"type": "String"
+			},
+			{
+				"name": "CurrentPosition",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "Division",
+				"type": "String"
+			},
+			{
+				"name": "BranchShopId",
+				"type": "String"
+			},
+			{
+				"name": "ManagerId",
+				"type": "String"
+			},
+			{
+				"name": "DateJoined",
+				"type": "String"
+			},
+			{
+				"name": "PayrollNum",
+				"type": "String"
+			},
+			{
+				"name": "PayGrade",
+				"type": "String"
+			},
+			{
+				"name": "CurrentStatus",
+				"type": "String"
+			}
+		],
+		"typeProperties": {
+			"format": {
+				"type": "TextFormat",
+				"columnDelimiter": ",",
+				"rowDelimiter": "",
+				"quoteChar": "\"",
+				"nullValue": "\\N",
+				"encodingName": null,
+				"treatEmptyAsNull": true,
+				"skipLineCount": 0,
+				"firstRowAsHeader": true
+			},
+			"fileName": "Employee.csv",
+			"folderPath": ""
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
