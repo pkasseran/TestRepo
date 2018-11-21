@@ -7,17 +7,21 @@
 			"metadata": "Data Factory Name",
 			"defaultValue": "pkassdatafactory"
 		},
-		"sqlserver1_connectionString": {
+		"AzureBlobStorage1_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'sqlserver1'"
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"SqlServer1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SqlServer1'"
 		},
 		"linkedService1_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'linkedService1'"
-		},
-		"AzureBlobStorage1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
 		},
 		"linkedService2_password": {
 			"type": "secureString",
@@ -31,14 +35,6 @@
 			"type": "string",
 			"defaultValue": "DealerDWdata"
 		},
-		"EmployeeFile_properties_typeProperties_fileName": {
-			"type": "string",
-			"defaultValue": "Employee.csv"
-		},
-		"EmployeeFile_properties_typeProperties_folderPath": {
-			"type": "string",
-			"defaultValue": ""
-		},
 		"AzureBlob1_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": ""
@@ -50,6 +46,14 @@
 		"DealerMartFile_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "DealerDWdata/Compressed"
+		},
+		"EmployeeFile_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "Employee.csv"
+		},
+		"EmployeeFile_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": ""
 		},
 		"FileShare1_properties_typeProperties_fileName": {
 			"type": "string",
@@ -72,6 +76,86 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/NewPipelineFrom3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0
+						},
+						"inputs": [
+							{
+								"referenceName": "FileShare1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureBlob1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy Data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/pravesh.kasseran@outlook.com/CopyIntoAzureSQLDB"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/FileShare1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -297,135 +381,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/NewPipelineFrom3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy Data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "FileSystemSource",
-								"recursive": true
-							},
-							"sink": {
-								"type": "BlobSink"
-							},
-							"enableStaging": false,
-							"dataIntegrationUnits": 0
-						},
-						"inputs": [
-							{
-								"referenceName": "FileShare1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureBlob1",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FileShare1')]",
-				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sqlserver1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"structure": [
-					{
-						"name": "PARTCATALOG_DIM_SK",
-						"type": "Int64"
-					},
-					{
-						"name": "EPID",
-						"type": "String"
-					},
-					{
-						"name": "PART_LONG_NAME",
-						"type": "String"
-					},
-					{
-						"name": "BRAND",
-						"type": "String"
-					},
-					{
-						"name": "MANUFACTURER_PART_NUMBER",
-						"type": "String"
-					},
-					{
-						"name": "PART_TYPE",
-						"type": "String"
-					},
-					{
-						"name": "PART_SUB_TYPE",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_1",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_2",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_3",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_4",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_5",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY_LEVEL_6",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORYID",
-						"type": "String"
-					}
-				],
-				"typeProperties": {
-					"tableName": "[concat('[', 'dbo].[DIM_PARTCATALOG]')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sqlserver1')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AccessMyLocalDirectory')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -507,6 +462,71 @@
 					},
 					"fileName": "[parameters('AccessMyLocalDirectory_properties_typeProperties_fileName')]",
 					"folderPath": "[parameters('AccessMyLocalDirectory_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedService1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlob1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "\u001f�\b\b�\u0006�[\u0004\u0000DIM_CALENDAR.csv\u0000��I�dE\u0018���\u0010׊y#�\u0010�N\u0014\u0017��(�+q(T\u001cq\u0002��QeV�\u001ba���\u0007\u000e�7��Q�C�����_���˷_���{?���?��Ƌ+�}�����������'}���\u000f�w�{����>���?���{�\u0011�?<���W�|���\u000f�ޯ���\u001f8�����ﻏ?����+��څ�:򛷭�������\u001f�W\u001f�\\�������ʭ��>~��[y�V_�q�z��-߿��'�޾}���\u0017��������x���x���]Ϲs�",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "[parameters('AzureBlob1_properties_typeProperties_fileName')]",
+					"folderPath": "[parameters('AzureBlob1_properties_typeProperties_folderPath')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DealerMartFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedService1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "FileShare",
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"folderPath": "[parameters('DealerMartFile_properties_typeProperties_folderPath')]"
 				}
 			},
 			"dependsOn": [
@@ -596,71 +616,6 @@
 					},
 					"fileName": "[parameters('EmployeeFile_properties_typeProperties_fileName')]",
 					"folderPath": "[parameters('EmployeeFile_properties_typeProperties_folderPath')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linkedService1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlob1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureBlob",
-				"structure": [
-					{
-						"name": "\u001f�\b\b�\u0006�[\u0004\u0000DIM_CALENDAR.csv\u0000��I�dE\u0018���\u0010׊y#�\u0010�N\u0014\u0017��(�+q(T\u001cq\u0002��QeV�\u001ba���\u0007\u000e�7��Q�C�����_���˷_���{?���?��Ƌ+�}�����������'}���\u000f�w�{����>���?���{�\u0011�?<���W�|���\u000f�ޯ���\u001f8�����ﻏ?����+��څ�:򛷭�������\u001f�W\u001f�\\�������ʭ��>~��[y�V_�q�z��-߿��'�޾}���\u0017��������x���x���]Ϲs�",
-						"type": "String"
-					}
-				],
-				"typeProperties": {
-					"format": {
-						"type": "TextFormat",
-						"columnDelimiter": ",",
-						"rowDelimiter": "",
-						"quoteChar": "\"",
-						"nullValue": "\\N",
-						"treatEmptyAsNull": true,
-						"skipLineCount": 0,
-						"firstRowAsHeader": true
-					},
-					"fileName": "[parameters('AzureBlob1_properties_typeProperties_fileName')]",
-					"folderPath": "[parameters('AzureBlob1_properties_typeProperties_folderPath')]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DealerMartFile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "linkedService1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "FileShare",
-				"typeProperties": {
-					"format": {
-						"type": "TextFormat",
-						"columnDelimiter": ",",
-						"rowDelimiter": "",
-						"quoteChar": "\"",
-						"nullValue": "\\N",
-						"treatEmptyAsNull": true,
-						"skipLineCount": 0,
-						"firstRowAsHeader": true
-					},
-					"folderPath": "[parameters('DealerMartFile_properties_typeProperties_folderPath')]"
 				}
 			},
 			"dependsOn": [
@@ -804,24 +759,122 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SelfHostintegrationRuntime1')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
+				"linkedServiceName": {
+					"referenceName": "SqlServer1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"structure": [
+					{
+						"name": "PARTCATALOG_DIM_SK",
+						"type": "Int64"
+					},
+					{
+						"name": "EPID",
+						"type": "String"
+					},
+					{
+						"name": "PART_LONG_NAME",
+						"type": "String"
+					},
+					{
+						"name": "BRAND",
+						"type": "String"
+					},
+					{
+						"name": "MANUFACTURER_PART_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "PART_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "PART_SUB_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_1",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_2",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_3",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_4",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_5",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_6",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORYID",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[concat('[', 'dbo].[DIM_PARTCATALOG]')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SqlServer1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sqlserver1')]",
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://australiasoutheast.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"existingClusterId": "1104-023223-strum491"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServer1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "SqlServer",
 				"typeProperties": {
-					"connectionString": "[parameters('sqlserver1_connectionString')]"
+					"connectionString": "[parameters('SqlServer1_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -851,19 +904,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/linkedService2')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -878,6 +918,16 @@
 						"value": "[parameters('linkedService2_password')]"
 					}
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelfHostintegrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
 			},
 			"dependsOn": []
 		}

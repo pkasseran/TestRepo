@@ -5,13 +5,16 @@
 		"factoryName": {
 			"value": "pkassdatafactory"
 		},
-		"sqlserver1_connectionString": {
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"SqlServer1_connectionString": {
 			"value": ""
 		},
 		"linkedService1_password": {
-			"value": ""
-		},
-		"AzureBlobStorage1_connectionString": {
 			"value": ""
 		},
 		"linkedService2_password": {
@@ -23,12 +26,6 @@
 		"AccessMyLocalDirectory_properties_typeProperties_folderPath": {
 			"value": "DealerDWdata"
 		},
-		"EmployeeFile_properties_typeProperties_fileName": {
-			"value": "Employee.csv"
-		},
-		"EmployeeFile_properties_typeProperties_folderPath": {
-			"value": ""
-		},
 		"AzureBlob1_properties_typeProperties_fileName": {
 			"value": ""
 		},
@@ -37,6 +34,12 @@
 		},
 		"DealerMartFile_properties_typeProperties_folderPath": {
 			"value": "DealerDWdata/Compressed"
+		},
+		"EmployeeFile_properties_typeProperties_fileName": {
+			"value": "Employee.csv"
+		},
+		"EmployeeFile_properties_typeProperties_folderPath": {
+			"value": ""
 		},
 		"FileShare1_properties_typeProperties_fileName": {
 			"value": "ZZSAP000.CSV"
