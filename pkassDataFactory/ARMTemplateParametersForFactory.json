@@ -1,0 +1,54 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "pkassdatafactory"
+		},
+		"sqlserver1_connectionString": {
+			"value": ""
+		},
+		"linkedService1_password": {
+			"value": ""
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"linkedService2_password": {
+			"value": ""
+		},
+		"AccessMyLocalDirectory_properties_typeProperties_fileName": {
+			"value": "DIM_PARTCATALOG.csv"
+		},
+		"AccessMyLocalDirectory_properties_typeProperties_folderPath": {
+			"value": "DealerDWdata"
+		},
+		"EmployeeFile_properties_typeProperties_fileName": {
+			"value": "Employee.csv"
+		},
+		"EmployeeFile_properties_typeProperties_folderPath": {
+			"value": ""
+		},
+		"AzureBlob1_properties_typeProperties_fileName": {
+			"value": ""
+		},
+		"AzureBlob1_properties_typeProperties_folderPath": {
+			"value": "pkblobcontainer"
+		},
+		"DealerMartFile_properties_typeProperties_folderPath": {
+			"value": "DealerDWdata/Compressed"
+		},
+		"FileShare1_properties_typeProperties_fileName": {
+			"value": "ZZSAP000.CSV"
+		},
+		"FileShare1_properties_typeProperties_folderPath": {
+			"value": ""
+		},
+		"linkedService1_properties_typeProperties_userId": {
+			"value": "admin"
+		},
+		"linkedService2_properties_typeProperties_userId": {
+			"value": "AZURE\\pkazurestorage"
+		}
+	}
+}

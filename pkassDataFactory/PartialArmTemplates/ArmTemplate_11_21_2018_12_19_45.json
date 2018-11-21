@@ -1,0 +1,700 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "pkassdatafactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/NewPipelineFrom3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Data1",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0
+						},
+						"inputs": [
+							{
+								"referenceName": "FileShare1",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureBlob1",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/FileShare1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Data1",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "SqlSink",
+								"writeBatchSize": 10000,
+								"preCopyScript": "truncate table [dbo].[DIM_PARTCATALOG]"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0,
+							"translator": {
+								"type": "TabularTranslator",
+								"columnMappings": {
+									"PARTCATALOG_DIM_SK": "PARTCATALOG_DIM_SK",
+									"EPID": "EPID",
+									"PART_LONG_NAME": "PART_LONG_NAME",
+									"BRAND": "BRAND",
+									"MANUFACTURER_PART_NUMBER": "MANUFACTURER_PART_NUMBER",
+									"PART_TYPE": "PART_TYPE",
+									"PART_SUB_TYPE": "PART_SUB_TYPE",
+									"CATEGORY_LEVEL_1": "CATEGORY_LEVEL_1",
+									"CATEGORY_LEVEL_2": "CATEGORY_LEVEL_2",
+									"CATEGORY_LEVEL_3": "CATEGORY_LEVEL_3",
+									"CATEGORY_LEVEL_4": "CATEGORY_LEVEL_4",
+									"CATEGORY_LEVEL_5": "CATEGORY_LEVEL_5",
+									"CATEGORY_LEVEL_6": "CATEGORY_LEVEL_6",
+									"CATEGORYID": "CATEGORYID"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AccessMyLocalDirectory",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SqlServerTable1",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Cp Employee To Azure Storage",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy Data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0
+						},
+						"inputs": [
+							{
+								"referenceName": "EmployeeFile",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureBlob1",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AccessMyLocalDirectory')]",
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]",
+				"[concat(variables('factoryId'), '/datasets/EmployeeFile')]",
+				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Dealer Zip",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0
+						},
+						"inputs": [
+							{
+								"referenceName": "DealerMartFile",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureBlob1",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DealerMartFile')]",
+				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Data1",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "FileSystemSource",
+								"recursive": true
+							},
+							"sink": {
+								"type": "BlobSink"
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 0
+						},
+						"inputs": [
+							{
+								"referenceName": "FileShare1",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureBlob1",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/FileShare1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureBlob1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AccessMyLocalDirectory')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedService1",
+					"type": "LinkedServiceReference"
+				},
+				"type": "FileShare",
+				"structure": [
+					{
+						"name": "PARTCATALOG_DIM_SK",
+						"type": "Int32"
+					},
+					{
+						"name": "EPID",
+						"type": "String"
+					},
+					{
+						"name": "PART_LONG_NAME",
+						"type": "String"
+					},
+					{
+						"name": "BRAND",
+						"type": "String"
+					},
+					{
+						"name": "MANUFACTURER_PART_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "PART_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "PART_SUB_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_1",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_2",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_3",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_4",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_5",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_6",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORYID",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "DIM_PARTCATALOG.csv",
+					"folderPath": "DealerDWdata"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlob1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureBlob",
+				"structure": [
+					{
+						"name": "\u001f�\b\b�\u0006�[\u0004\u0000DIM_CALENDAR.csv\u0000��I�dE\u0018���\u0010׊y#�\u0010�N\u0014\u0017��(�+q(T\u001cq\u0002��QeV�\u001ba���\u0007\u000e�7��Q�C�����_���˷_���{?���?��Ƌ+�}�����������'}���\u000f�w�{����>���?���{�\u0011�?<���W�|���\u000f�ޯ���\u001f8�����ﻏ?����+��څ�:򛷭�������\u001f�W\u001f�\\�������ʭ��>~��[y�V_�q�z��-߿��'�޾}���\u0017��������x���x���]Ϲs�",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "",
+					"folderPath": "pkblobcontainer"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DealerMartFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedService1",
+					"type": "LinkedServiceReference"
+				},
+				"type": "FileShare",
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"folderPath": "DealerDWdata/Compressed"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EmployeeFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedService1",
+					"type": "LinkedServiceReference"
+				},
+				"type": "FileShare",
+				"structure": [
+					{
+						"name": "EmployeeId",
+						"type": "Int64"
+					},
+					{
+						"name": "EmployeeNo",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "CurrentPosition",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "Division",
+						"type": "String"
+					},
+					{
+						"name": "BranchShopId",
+						"type": "String"
+					},
+					{
+						"name": "ManagerId",
+						"type": "String"
+					},
+					{
+						"name": "DateJoined",
+						"type": "String"
+					},
+					{
+						"name": "PayrollNum",
+						"type": "String"
+					},
+					{
+						"name": "PayGrade",
+						"type": "String"
+					},
+					{
+						"name": "CurrentStatus",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"quoteChar": "\"",
+						"nullValue": "\\N",
+						"encodingName": null,
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "Employee.csv",
+					"folderPath": ""
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileShare1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedService2",
+					"type": "LinkedServiceReference"
+				},
+				"type": "FileShare",
+				"structure": [
+					{
+						"name": "Centre",
+						"type": "String"
+					},
+					{
+						"name": "Filler",
+						"type": "String"
+					},
+					{
+						"name": "Store Name",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "Account Type",
+						"type": "String"
+					},
+					{
+						"name": "Major Group",
+						"type": "String"
+					},
+					{
+						"name": "Sub Group Major",
+						"type": "String"
+					},
+					{
+						"name": "Minor Group",
+						"type": "String"
+					},
+					{
+						"name": "Sub Group Minor",
+						"type": "String"
+					},
+					{
+						"name": "Account Number and Description",
+						"type": "String"
+					},
+					{
+						"name": "Date",
+						"type": "String"
+					},
+					{
+						"name": "Period 01",
+						"type": "String"
+					},
+					{
+						"name": "Period 02",
+						"type": "String"
+					},
+					{
+						"name": "Period 03",
+						"type": "String"
+					},
+					{
+						"name": "Period 04",
+						"type": "String"
+					},
+					{
+						"name": "Period 05",
+						"type": "String"
+					},
+					{
+						"name": "Period 06",
+						"type": "String"
+					},
+					{
+						"name": "Period 07",
+						"type": "String"
+					},
+					{
+						"name": "Period 08",
+						"type": "String"
+					},
+					{
+						"name": "Period 09",
+						"type": "String"
+					},
+					{
+						"name": "Period 10",
+						"type": "String"
+					},
+					{
+						"name": "Period 11",
+						"type": "String"
+					},
+					{
+						"name": "Period 12",
+						"type": "String"
+					},
+					{
+						"name": "Account Number",
+						"type": "String"
+					},
+					{
+						"name": "Comp Code",
+						"type": "String"
+					},
+					{
+						"name": "Profit Centre",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"nullValue": "\\N",
+						"encodingName": null,
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": true
+					},
+					"fileName": "ZZSAP000.CSV",
+					"folderPath": ""
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlServer1",
+					"type": "LinkedServiceReference"
+				},
+				"type": "SqlServerTable",
+				"structure": [
+					{
+						"name": "PARTCATALOG_DIM_SK",
+						"type": "Int64"
+					},
+					{
+						"name": "EPID",
+						"type": "String"
+					},
+					{
+						"name": "PART_LONG_NAME",
+						"type": "String"
+					},
+					{
+						"name": "BRAND",
+						"type": "String"
+					},
+					{
+						"name": "MANUFACTURER_PART_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "PART_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "PART_SUB_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_1",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_2",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_3",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_4",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_5",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY_LEVEL_6",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORYID",
+						"type": "String"
+					}
+				],
+				"typeProperties": {
+					"tableName": "[concat('[', 'dbo].[DIM_PARTCATALOG]')]"
+				}
+			}
+		}
+	]
+}
