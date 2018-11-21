@@ -1,0 +1,16 @@
+{
+	"name": "linkedService1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\Temp",
+			"userId": "admin",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJiZDZhNmVlMC1iZTEyLTQ3YTAtYTI3ZC01MmJiN2NkMGY2NzMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SelfHostintegrationRuntime1",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
